@@ -1,4 +1,4 @@
-# Variável para definir a região AWS dinamicamente
+#Variável para definir a região AWS dinamicamente
 variable "aws_region" {
   description = "Região AWS onde os recursos serão criados"
   type        = string
@@ -69,6 +69,7 @@ resource "aws_route_table" "main_route_table" {
 resource "aws_security_group" "sg" {
   vpc_id = aws_vpc.main_vpc.id
 
+
   # Permite acesso SSH apenas a IPs da VPN
   ingress {
     from_port   = 22
@@ -77,7 +78,8 @@ resource "aws_security_group" "sg" {
     cidr_blocks = ["192.168.100.0/24"]
   }
 
-  # Permite acesso HTTP para qualquer IP (para acessar o Nginx)
+# Permite acesso HTTP público (porta 80)
+# Será utilizada para disponibilizar o Nginx, que será instalado automaticamente na seção Criando a instância EC2 com Nginx instalado automaticamente.
   ingress {
     from_port   = 80
     to_port     = 80
@@ -85,7 +87,6 @@ resource "aws_security_group" "sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
 # Busca automática da AMI do Ubuntu mais recente para a região escolhida
 data "aws_ami" "ubuntu" {
   most_recent = true
