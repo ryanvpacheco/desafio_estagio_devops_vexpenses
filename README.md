@@ -162,7 +162,7 @@ Este documento detalha as **melhorias implementadas** no código Terraform, orga
 
 ---
 
-## **Código Terraform Modificado (`main_modificada.tf`)**
+## **Código Terraform Modificado (`main.tf`)**
 ```hcl
 # Variável para definir a região AWS dinamicamente
 variable "aws_region" {
@@ -242,14 +242,16 @@ resource "aws_security_group" "sg" {
     protocol    = "tcp"
     cidr_blocks = ["192.168.100.0/24"]
   }
-}
-# Permite acesso HTTP público (porta 80)
-# Será utilizada para disponibilizar o Nginx, que será instalado automaticamente no bloco "Criando a instância EC2 com Nginx instalado automaticamente".
-ingress {
-  from_port   = 80
-  to_port     = 80
-  protocol    = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  
+  # Permite acesso HTTP público (porta 80)
+  # Será utilizada para disponibilizar o Nginx, que será instalado automaticamente no bloco
+  "Criando a instância EC2 com Nginx instalado automaticamente".
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 # Busca automática da AMI do Ubuntu mais recente para a região escolhida
@@ -294,106 +296,6 @@ resource "aws_instance" "ec2" {
 resource "aws_eip" "elastic_ip" {
   instance = aws_instance.ec2.id
 }
-```
-
----
-
-# **Descrição Técnica das Melhorias Implementadas**
-
-A seguir, explicamos **o que foi alterado no código, por que isso foi necessário e o resultado esperado**.
-
-## **1. Aplicação de Melhorias de Segurança**
-### **1.1 Restringindo Acesso SSH**
-- **O que foi alterado?**  
-  Antes, o código permitia **acesso SSH aberto para qualquer IP (`0.0.0.0/0`)**. Agora, o acesso SSH **está restrito apenas a IPs da VPN da empresa**.  
-- **Por que isso foi necessário?**  
-  Isso impede acessos externos indesejados e garante que **apenas usuários autenticados pela VPN** possam acessar a instância EC2.
-- **Código alterado:**  
-  ```hcl
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["192.168.100.0/24"]
-  }
-  ```
-- **Resultado esperado:**  
-  A instância EC2 só poderá ser acessada por usuários **autorizados dentro da rede da VPN**.
-
----
-
-## **2. Automação da Instalação do Nginx**
-- **O que foi alterado?**  
-  Agora, o Terraform **instala e inicia automaticamente o Nginx** assim que a instância EC2 é criada.
-- **Por que isso foi necessário?**  
-  Isso evita a necessidade de configuração manual após a criação do servidor, tornando o ambiente pronto para uso.
-- **Código alterado:**  
-  ```hcl
-  user_data = <<-EOF
-    #!/bin/bash
-    apt update -y
-    apt install nginx -y
-    systemctl start nginx
-    systemctl enable nginx
-  EOF
-  ```
-- **Resultado esperado:**  
-  Assim que a EC2 for provisionada, o **Nginx estará instalado e rodando automaticamente**, pronto para receber requisições HTTP.
-
----
-
-## **3. Outras Melhorias**
-### **3.1 Tornando a Região AWS Configurável**
-Agora, a **região AWS pode ser alterada sem editar o código**, bastando passar um novo valor na linha de comando:
-```sh
-terraform apply -var="aws_region=sa-east-1"
-```
-Isso permite flexibilidade para implantar a infraestrutura em qualquer região da AWS.
-
----
-
-### **3.2 Escolha Automática da Zona de Disponibilidade**
-O Terraform agora **seleciona automaticamente uma zona válida para a região escolhida**, evitando falhas ao mudar a localização.
-
-- **Código alterado:**  
-  ```hcl
-  data "aws_availability_zones" "available" {}
-
-  resource "aws_subnet" "main_subnet" {
-    vpc_id            = aws_vpc.main_vpc.id
-    cidr_block        = "10.0.1.0/24"
-    availability_zone = data.aws_availability_zones.available.names[0]
-  }
-  ```
-
----
-
-### **3.3 Seleção Automática da AMI**
-Agora, a AMI do Ubuntu **é buscada dinamicamente**, garantindo que sempre exista na região escolhida.
-
-- **Código alterado:**  
-  ```hcl
-  data "aws_ami" "ubuntu" {
-    most_recent = true
-    owners      = ["099720109477"]
-
-    filter {
-      name   = "name"
-      values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-    }
-
-    filter {
-      name   = "virtualization-type"
-      values = ["hvm"]
-    }
-  }
-  ```
-
----
-
-# **Conclusão**
-Agora, a infraestrutura pode ser implantada **em qualquer região AWS**, mantendo segurança, automação e compatibilidade com a VPN.
-
 ```
 
 ---
