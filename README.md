@@ -8,7 +8,25 @@ provider "aws" {
   region = "us-east-1"
 }
 ```
-Este bloco define o **provedor de nuvem** (AWS) e a **região** onde os recursos serão criados. No caso, está sendo usada a região **`us-east-1` (Leste dos EUA)**. Essa escolha afeta aspectos como custo, latência e disponibilidade dos serviços da AWS.
+Este bloco define o **provedor de nuvem** (AWS) e a **região** onde os recursos serão criados.  
+No caso, está sendo utilizada a região **us-east-1 (Leste dos EUA)**.
+
+## Fatores para a escolha da região
+
+- **Custo**  
+  Os preços dos serviços podem variar entre as regiões.
+
+- **Latência**  
+  Influencia no tempo de resposta dos serviços dependendo da localização dos usuários.
+
+- **Disponibilidade de Recursos**  
+  Algumas instâncias, serviços e features podem ter mais disponibilidade em determinadas regiões.
+
+- **Regulamentação e Compliance**  
+  Algumas aplicações podem ter requisitos específicos para armazenar dados em determinadas regiões.
+
+Vale analisar as necessidades do projeto para garantir que a escolha da região atenda melhor aos objetivos de desempenho, custo e disponibilidade.
+
 
 ### **2. Definição de Variáveis**  
 ```hcl
@@ -225,13 +243,17 @@ resource "aws_security_group" "sg" {
     cidr_blocks = ["192.168.100.0/24"]
   }
 
-  # Permite acesso HTTP para qualquer IP (para acessar o Nginx)
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+# Permite acesso HTTP público (porta 80)
+
+Esta configuração libera o tráfego HTTP para qualquer IP (0.0.0.0/0), permitindo acesso ao servidor web.  
+Será utilizada para disponibilizar o **Nginx**, que será instalado automaticamente na seção **Criando a instância EC2 com Nginx instalado automaticamente**.
+
+```terraform
+ingress {
+  from_port   = 80
+  to_port     = 80
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
 }
 
 # Busca automática da AMI do Ubuntu mais recente para a região escolhida
