@@ -162,8 +162,7 @@ Este documento detalha as **melhorias implementadas** no código Terraform, orga
 
 ---
 
-## **Código Terraform Modificado (`main_modificada.tf`)**
-```hcl# **Tarefa 1**  
+# **Tarefa 1**  
 # **Análise Técnica do Código Terraform (`main.tf`)**  
 ## **Descrição Técnica**
 
@@ -409,7 +408,7 @@ resource "aws_security_group" "sg" {
   }
 
 # Permite acesso HTTP público (porta 80)
-# Será utilizada para disponibilizar o Nginx, que será instalado automaticamente na seção Criando a instância EC2 com Nginx instalado automaticamente.
+# Será utilizada para disponibilizar o Nginx, que será instalado automaticamente no bloco "Criando a instância EC2 com Nginx instalado automaticamente".
 ingress {
   from_port   = 80
   to_port     = 80
