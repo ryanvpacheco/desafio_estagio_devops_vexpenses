@@ -1,5 +1,5 @@
 # **Tarefa 1**  
-# **Análise Técnica do Código Terraform main.tf**  
+# **Análise Técnica do Código Terraform (`main.tf`)**  
 ## **Descrição Técnica**
 
 ### **1. Configuração do Provedor AWS**  
