@@ -144,7 +144,7 @@ Este documento detalha as **melhorias implementadas** no código Terraform, orga
 
 ---
 
-## **Código Terraform Modificado (`main.tf`)**
+## **Código Terraform Modificado (`main_modificada.tf`)**
 ```hcl
 # Variável para definir a região AWS dinamicamente
 variable "aws_region" {
