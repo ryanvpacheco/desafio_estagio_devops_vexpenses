@@ -244,11 +244,7 @@ resource "aws_security_group" "sg" {
   }
 
 # Permite acesso HTTP público (porta 80)
-
-Esta configuração libera o tráfego HTTP para qualquer IP (0.0.0.0/0), permitindo acesso ao servidor web.  
-Será utilizada para disponibilizar o **Nginx**, que será instalado automaticamente na seção **Criando a instância EC2 com Nginx instalado automaticamente**.
-
-```terraform
+# Será utilizada para disponibilizar o Nginx, que será instalado automaticamente na seção Criando a instância EC2 com Nginx instalado automaticamente.
 ingress {
   from_port   = 80
   to_port     = 80
